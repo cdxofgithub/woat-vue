@@ -7,7 +7,10 @@
           !item.alwaysShow
       "
     >
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
+      <app-link
+        v-if="onlyOneChild.meta"
+        :to="resolvePath(onlyOneChild.path)"
+      >
         <el-menu-item
           :index="resolvePath(onlyOneChild.path)"
           :class="{ 'submenu-title-noDropdown': !isNest }"
@@ -72,8 +75,6 @@ export default {
     }
   },
   data() {
-    // To fix https://github.com/PanJiaChen/woat-vue/issues/237
-    // TODO: refactor with render function
     this.onlyOneChild = null;
     return {};
   },

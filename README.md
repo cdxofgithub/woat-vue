@@ -1,3 +1,19 @@
+# woat-vue
+
+## 部分截图
+
+
+### 自定义菜单
+
+<img src="https://github.com/cdxofgithub/woat-vue/master/screenshots/custom-menu.png" width="365" height="619"/>
+
+
+### 预览
+
+<img src="https://github.com/cdxofgithub/woat-vue/master/screenshots/preview.png" width="365" height="619"/>
+
+
+
 ## Build Setup
 
 ```bash
