@@ -6,7 +6,9 @@ const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    introduction: '',
+    roles: []
   }
 }
 
@@ -24,6 +26,12 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_INTRODUCTION: (state, introduction) => {
+    state.introduction = introduction
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
   }
 }
 
@@ -53,10 +61,11 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar } = data
-
+        const { name, avatar, roles, introduction } = data
+        commit('SET_ROLES', roles)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
+        commit('SET_INTRODUCTION', introduction)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -85,7 +94,31 @@ const actions = {
       commit('RESET_STATE')
       resolve()
     })
-  }
+  },
+  // dynamically modify permissions
+  // changeRoles({ commit, dispatch }, role) {
+  //   return new Promise(async resolve => {
+  //     const token = role + '-token'
+
+  //     commit('SET_TOKEN', token)
+  //     setToken(token)
+
+  //     const { roles } = await dispatch('getInfo')
+
+  //     resetRouter()
+
+  //     // generate accessible routes map based on roles
+  //     const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
+
+  //     // dynamically add accessible routes
+  //     router.addRoutes(accessRoutes)
+
+  //     // reset visited views and cached views
+  //     dispatch('tagsView/delAllViews', null, { root: true })
+
+  //     resolve()
+  //   })
+  // }
 }
 
 export default {

@@ -350,7 +350,7 @@ export default {
       tabName: "0", //菜单内容->发送消息->面板切换
       surplusNum: 300, //剩余可以输入字数
       isPreview: false, //是否打开预览
-      showFileList: false
+      showFileList: false,
     };
   },
   watch: {

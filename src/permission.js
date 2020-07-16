@@ -1,7 +1,7 @@
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
-import NProgress from 'nprogress' // progress bar
+import NProgress from 'nprogress' // progress bar 绿色加载进度条
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
@@ -11,6 +11,7 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 const whiteList = ['/login'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
+  console.log("router beforeEach")
   // start progress bar
   NProgress.start()
 
@@ -19,6 +20,7 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken()
+  console.log("hasToken:" + hasToken)
 
   if (hasToken) {
     if (to.path === '/login') {
@@ -26,15 +28,17 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo) {
+      const hasRoles = store.getters.roles && store.getters.roles.length > 0
+      if (hasRoles) {
         next()
       } else {
         try {
           // get user info
-          await store.dispatch('user/getInfo')
-
-          next()
+          const { roles } = await store.dispatch('user/getInfo')
+          const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+          console.log(accessRoutes)
+          router.addRoutes(accessRoutes)
+          next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
