@@ -4,7 +4,6 @@ import Router from "vue-router";
 Vue.use(Router);
 
 /* Layout */
-import Layout from "@/layout";
 
 export const constantRoutes = [
   {
@@ -20,7 +19,7 @@ export const constantRoutes = [
   },
   {
     path: "/",
-    component: Layout,
+    component:() => import("@/layout"),
     redirect: "/dashboard",
     children: [
       {
@@ -35,56 +34,58 @@ export const constantRoutes = [
 export const asyncRoutes = [
   {
     path: "/user",
-    component: Layout,
+    component:() => import("@/layout"),
     redirect: "/user/user-list",
+    alwaysShow: true,
     name: "User",
-    meta: { title: "用户管理", icon: "user" },
+    meta: { title: "用户管理", icon: "user", roles: [] },
     children: [
       {
         path: "user-list",
         name: "User-list",
         component: () => import("@/views/user/user-list"),
-        meta: { title: "用户列表", icon: "table" }
+        meta: { title: "用户列表", icon: "table", roles: [] }
       },
       {
         path: "user-add",
         name: "User-add",
         component: () => import("@/views/user/user-add"),
-        meta: { title: "新增用户", icon: "edit" }
+        meta: { title: "新增用户", icon: "edit", roles: [] }
       },
     ]
   },
   {
     path: "/function",
-    component: Layout,
+    component:() => import("@/layout"),
     redirect: "/function/custom-menu",
+    alwaysShow: true,
     name: "Function",
-    meta: { title: "微信模块", icon: "example" },
+    meta: { title: "微信模块", icon: "example", roles: [] },
     children: [
       {
         path: "custom-menu",
         name: "Custom-menu",
         component: () => import("@/views/custom-menu/index"),
-        meta: { title: "自定义菜单", icon: "table" }
+        meta: { title: "自定义菜单", icon: "table", roles: [] }
       },
       {
         path: "custom-reply",
         name: "Custom-reply",
         component: () => import("@/views/custom-reply/index"),
-        meta: { title: "自动回复", icon: "table" }
+        meta: { title: "自动回复", icon: "table", roles: [] }
       }
     ]
   },
   {
     path: "/permission",
-    component: Layout,
+    component:() => import("@/layout"),
     redirect: "/permission/page",
-    alwaysShow: true, // will always show the root menu
+    alwaysShow: true,
     name: "Permission",
     meta: {
       title: "权限控制",
       icon: "lock",
-      roles: ["admin", "editor"] // you can set roles in root nav
+      roles: []
     },
     children: [
       {
@@ -93,7 +94,7 @@ export const asyncRoutes = [
         name: "PagePermission",
         meta: {
           title: "页面权限",
-          roles: ["admin"] // or you can only set roles in sub nav
+          roles: []
         }
       },
       {
@@ -102,7 +103,7 @@ export const asyncRoutes = [
         name: "RolePermission",
         meta: {
           title: "角色权限",
-          roles: ["admin"]
+          roles: []
         }
       }
     ]

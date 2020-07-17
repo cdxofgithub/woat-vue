@@ -14,11 +14,9 @@ export const constantRoutes = [
   },
   {
     path: "/",
-    redirect: "/dashboard",
     children: [
       {
         path: "dashboard",
-        name: "Dashboard",
         meta: { title: "首页", icon: "dashboard" }
       }
     ]
@@ -27,8 +25,6 @@ export const constantRoutes = [
 export const asyncRoutes = [
   {
     path: "/user",
-    redirect: "/user/user-list",
-    name: "User",
     meta: { title: "用户管理", icon: "user" },
     children: [
       {
