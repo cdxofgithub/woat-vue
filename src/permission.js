@@ -11,7 +11,6 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 const whiteList = ['/login'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
-  console.log("router beforeEach")
   // start progress bar
   NProgress.start()
 
@@ -20,7 +19,6 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken()
-  console.log("hasToken:" + hasToken)
 
   if (hasToken) {
     if (to.path === '/login') {
@@ -36,7 +34,6 @@ router.beforeEach(async(to, from, next) => {
           // get user info
           const { roles } = await store.dispatch('user/getInfo')
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-          console.log(accessRoutes)
           router.addRoutes(accessRoutes)
           next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
         } catch (error) {

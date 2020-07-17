@@ -6,57 +6,63 @@
 export const constantRoutes = [
   {
     path: "/login",
-    component: () => "views/login/index",
     hidden: true
   },
-
   {
     path: "/404",
-    component: () => "views/404",
     hidden: true
   },
-
   {
     path: "/",
-    component: "Layout",
     redirect: "/dashboard",
     children: [
       {
         path: "dashboard",
         name: "Dashboard",
-        component: () => "views/dashboard/index",
         meta: { title: "首页", icon: "dashboard" }
       }
+    ]
+  }
+];
+export const asyncRoutes = [
+  {
+    path: "/user",
+    redirect: "/user/user-list",
+    name: "User",
+    meta: { title: "用户管理", icon: "user" },
+    children: [
+      {
+        path: "user-list",
+        name: "User-list",
+        meta: { title: "用户列表", icon: "table" }
+      },
+      {
+        path: "user-add",
+        name: "User-add",
+        meta: { title: "新增用户", icon: "edit" }
+      },
     ]
   },
   {
     path: "/function",
-    component: "Layout",
     redirect: "/function/custom-menu",
     name: "Function",
-    meta: { title: "功能", icon: "example" },
+    meta: { title: "微信模块", icon: "example" },
     children: [
       {
         path: "custom-menu",
         name: "Custom-menu",
-        component: () => "views/custom-menu/index",
         meta: { title: "自定义菜单", icon: "table" }
       },
       {
         path: "custom-reply",
         name: "Custom-reply",
-        component: () => "views/custom-reply/index",
         meta: { title: "自动回复", icon: "table" }
       }
     ]
   },
-  // 404 page must be placed at the end !!!
-  { path: "*", redirect: "/404", hidden: true }
-];
-export const asyncRoutes = [
   {
     path: "/permission",
-    component: "Layout",
     redirect: "/permission/page",
     alwaysShow: true, // will always show the root menu
     name: "Permission",
@@ -68,7 +74,6 @@ export const asyncRoutes = [
     children: [
       {
         path: "page",
-        component: () => "views/permission/page",
         name: "PagePermission",
         meta: {
           title: "页面权限",
@@ -77,7 +82,6 @@ export const asyncRoutes = [
       },
       {
         path: "role",
-        component: () => "views/permission/role",
         name: "RolePermission",
         meta: {
           title: "角色权限",
@@ -85,5 +89,7 @@ export const asyncRoutes = [
         }
       }
     ]
-  }
+  },
+  // 404 page must be placed at the end !!!
+  { path: "*", redirect: "/404", hidden: true }
 ];
