@@ -4,6 +4,7 @@ import Router from "vue-router";
 Vue.use(Router);
 
 /* Layout */
+// import Layout from '@/layout'
 
 export const constantRoutes = [
   {
@@ -33,25 +34,22 @@ export const constantRoutes = [
 ];
 export const asyncRoutes = [
   {
-    path: "/user",
-    component:() => import("@/layout"),
-    redirect: "/user/user-list",
+    path: '/user',
+    component: () => import("@/layout"),
+    redirect: '/user/user-list',
+    name: 'Table',
     alwaysShow: true,
-    name: "User",
-    meta: { title: "用户管理", icon: "user", roles: [] },
+    meta: {
+      title: '用户管理',
+      icon: 'user'
+    },
     children: [
       {
-        path: "user-list",
-        name: "User-list",
-        component: () => import("@/views/user/user-list"),
-        meta: { title: "用户列表", icon: "table", roles: [] }
-      },
-      {
-        path: "user-add",
-        name: "User-add",
-        component: () => import("@/views/user/user-add"),
-        meta: { title: "新增用户", icon: "edit", roles: [] }
-      },
+        path: 'user-list',
+        component: () => import('@/views/user/user-list'),
+        name: 'ComplexTable',
+        meta: { title: '用户列表', icon: "list" }
+      }
     ]
   },
   {
