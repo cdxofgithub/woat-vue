@@ -36,13 +36,11 @@ export const constantRoutes = [
     component: () => import("@/views/login/index"),
     hidden: true
   },
-
   {
     path: "/404",
     component: () => import("@/views/404"),
     hidden: true
   },
-
   {
     path: "/",
     component: Layout,
@@ -50,7 +48,7 @@ export const constantRoutes = [
     children: [
       {
         path: "dashboard",
-        name: "Dashboard",
+        name: "dashboard",
         component: () => import("@/views/dashboard/index"),
         meta: { title: "首页", icon: "dashboard" }
       }
@@ -74,6 +72,27 @@ export const constantRoutes = [
         name: "Custom-reply",
         component: () => import("@/views/custom-reply/index"),
         meta: { title: "自动回复", icon: "table" }
+      }
+    ]
+  },
+  {
+    path: "/table",
+    component: Layout,
+    redirect: "/table/photo",
+    name: "table",
+    meta: { title: "审核", icon: "example" },
+    children: [
+      {
+        path: "photo",
+        name: "table-photo",
+        component: () => import("@/views/table/photo"),
+        meta: { title: "图片审核", icon: "table" }
+      },
+      {
+        path: "index",
+        name: "table-index",
+        component: () => import("@/views/table/index"),
+        meta: { title: "文章列表", icon: "table" }
       }
     ]
   },
