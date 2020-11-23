@@ -3,14 +3,14 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.title"
-        placeholder="Title"
+        placeholder="标题"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
       <el-select
         v-model="listQuery.type"
-        placeholder="Type"
+        placeholder="类型"
         clearable
         class="filter-item"
         style="width: 130px"

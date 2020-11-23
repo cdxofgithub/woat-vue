@@ -620,6 +620,9 @@ export default {
               margin-right: 5px;
               background: url(../../assets/custom-menu/spirit-1.png) 0 -0px no-repeat;
             }
+            &:nth-child(1) {
+              border-left: none;
+            }
             &.active {
               border: 1px solid #07c160;
               color: #07c160;
@@ -673,7 +676,7 @@ export default {
                 border-top-style: solid;
               }
             }
-          }
+          } 
         }
       }
       &-right {
