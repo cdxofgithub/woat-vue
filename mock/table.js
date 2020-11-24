@@ -17,7 +17,7 @@ export default [
   {
     url: "/woat-vue/table/list",
     type: "get",
-    response: config => {
+    response: () => {
       const items = data.items;
       return {
         code: 20000,

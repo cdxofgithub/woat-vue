@@ -20,8 +20,6 @@ const mutations = {
     Object.assign(state, getDefaultState());
   },
   SET_TOKEN: (state, token) => {
-    console.log("token")
-    console.log(token)
     state.token = token;
   },
   SET_USER(state, userinfo) {
@@ -38,15 +36,17 @@ const actions = {
         admin_name: username.trim(),
         password: password
       });
+      console.log(data)
       commit("SET_TOKEN", data.token);
       setToken(data.token);
+      return data.token
     } catch (e) {
       console.log(e);
     }
   },
-  async getInfo({ commit }) {
+  async getInfo({ commit, state }) {
     try {
-      const { data } = await getInfo();
+      const { data } = await getInfo(state.token);
       commit("SET_USER", data);
     } catch (e) {
       console.log(e);
@@ -55,7 +55,6 @@ const actions = {
   async logout({ commit }) {
     try {
       await logout();
-      console.log("继续执行");
       removeToken();
       resetRouter();
       commit("RESET_STATE");
@@ -66,7 +65,7 @@ const actions = {
   async resetToken({ commit }) {
     removeToken();
     commit("RESET_STATE");
-  },
+  }
 };
 
 export default {

@@ -44,7 +44,10 @@
           auto-complete="on"
           @keyup.enter.native="handleLogin"
         />
-        <span class="show-pwd" @click="showPwd">
+        <span
+          class="show-pwd"
+          @click="showPwd"
+        >
           <svg-icon
             :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
           />
@@ -71,8 +74,8 @@
 // import { validUsername } from '@/utils/validate'
 // import { Message } from 'element-ui'
 export default {
-  name: 'Login',
-  data () {
+  name: "Login",
+  data() {
     // const validateUsername = (rule, value, callback) => {
     //   if (!validUsername(value)) {
     //     callback(new Error('账号不正确'))
@@ -89,63 +92,62 @@ export default {
     // }
     return {
       loginForm: {
-        username: '',
-        password: ''
+        username: "",
+        password: ""
       },
       loginRules: {
         username: [
-          { required: true, trigger: 'blur', message: '账号名不能为空' }
+          { required: true, trigger: "blur", message: "账号名不能为空" }
         ],
-        password: [{ required: true, trigger: 'blur', message: '密码不能为空' }]
+        password: [{ required: true, trigger: "blur", message: "密码不能为空" }]
       },
       loading: false,
-      passwordType: 'password',
+      passwordType: "password",
       redirect: undefined
-    }
+    };
   },
   watch: {
     $route: {
-      handler: function (route) {
-        this.redirect = route.query && route.query.redirect
+      handler: function(route) {
+        this.redirect = route.query && route.query.redirect;
       },
       immediate: true
     }
   },
   methods: {
-    showPwd () {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
+    showPwd() {
+      if (this.passwordType === "password") {
+        this.passwordType = "";
       } else {
-        this.passwordType = 'password'
+        this.passwordType = "password";
       }
       this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
+        this.$refs.password.focus();
+      });
     },
-    handleLogin () {
+    handleLogin() {
       this.$refs.loginForm.validate(async valid => {
         if (valid) {
-          this.loading = true
-          await this.$store.dispatch('user/login', this.loginForm)
-          await this.$store.dispatch('user/getInfo')
+          this.loading = true;
+          await this.$store.dispatch("user/login", this.loginForm);
           this.$message({
-            message: '登录成功',
-            type: 'success',
+            message: "登录成功",
+            type: "success",
             duration: 2 * 1000,
             onClose: () => {
-              console.log(this.redirect)
-              this.$router.push({ path: this.redirect || '/' })
-              this.loading = false
+              console.log(this.redirect);
+              this.$router.push({ path: this.redirect || "/" });
+              this.loading = false;
             }
-          })
+          });
         } else {
-          console.log('error submit!!')
-          return false
+          console.log("error submit!!");
+          return false;
         }
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

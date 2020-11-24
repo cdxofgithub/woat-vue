@@ -2,7 +2,7 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
-import { data } from 'autoprefixer'
+import qs from "qs";
 
 // create an axios instance
 const service = axios.create({
@@ -12,15 +12,14 @@ const service = axios.create({
 })
 
 // request interceptor
+// 添加请求拦截器
 service.interceptors.request.use(
   config => {
-    console.log(store.getters.token)
-    console.log(getToken())
     if (store.getters.token) {
-      config.data = {
-        ...data,
-        token: store.getters.token
-      }
+      config.data = qs.stringify({
+        ...config.data,
+        token: getToken()
+      })
     }
     return config
   },
@@ -43,19 +42,16 @@ service.interceptors.response.use(
         duration: 5 * 1000
       })
 
-      // // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      // if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-      //   // to re-login
-      //   MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-      //     confirmButtonText: 'Re-Login',
-      //     cancelButtonText: 'Cancel',
-      //     type: 'warning'
-      //   }).then(() => {
-      //     store.dispatch('user/resetToken').then(() => {
-      //       location.reload()
-      //     })
-      //   })
-      // }
+      if (res.code === -1) {
+        // to re-login
+        MessageBox.confirm('登陆已失效，重新授权？', {
+          confirmButtonText: 'Login',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          store.dispatch('user/logout')
+        })
+      }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
       return res

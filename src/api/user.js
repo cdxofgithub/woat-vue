@@ -8,10 +8,11 @@ export function login(data) {
   });
 }
 
-export function getInfo() {
+export function getInfo(token) {
   return request({
     url: "admin/admin_info",
-    method: "get"
+    method: "get",
+    params: { token }
   });
 }
 

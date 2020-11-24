@@ -27,11 +27,11 @@ const users = {
 export default [
   // user login
   {
-    url: "/woat-vue/user/login",
+    url: "/admin/login",
     type: "post",
     response: config => {
-      const { username } = config.body;
-      const token = tokens[username];
+      const { admin_name } = config.body;
+      const token = tokens[admin_name];
 
       // mock error
       if (!token) {
@@ -42,7 +42,7 @@ export default [
       }
 
       return {
-        code: 20000,
+        code: 0,
         data: token
       };
     }
@@ -50,22 +50,23 @@ export default [
 
   // get user info
   {
-    url: "/woat-vue/user/info.*",
+    url: "/admin/admin_info",
     type: "get",
     response: config => {
+      console.log(config.query)
       const { token } = config.query;
       const info = users[token];
 
       // mock error
       if (!info) {
         return {
-          code: 50008,
-          message: "Login failed, unable to get user details."
+          code: -1,
+          message: "token已失效，请重新登陆"
         };
       }
 
       return {
-        code: 20000,
+        code: 0,
         data: info
       };
     }
@@ -73,11 +74,11 @@ export default [
 
   // user logout
   {
-    url: "/woat-vue/user/logout",
-    type: "post",
+    url: "/admin/logout",
+    type: "get",
     response: () => {
       return {
-        code: 20000,
+        code: 0,
         data: "success"
       };
     }
