@@ -1,50 +1,17 @@
-const tokens = {
-  admin: {
-    token: "admin-token"
-  },
-  editor: {
-    token: "editor-token"
-  }
-};
-
-const users = {
-  "admin-token": {
-    roles: ["admin"],
-    introduction: "I am a super administrator",
-    avatar:
-      "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
-    name: "Super Admin"
-  },
-  "editor-token": {
-    roles: ["editor"],
-    introduction: "I am an editor",
-    avatar:
-      "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
-    name: "Normal Editor"
-  }
-};
-
 export default [
   // user login
   {
     url: "/admin/login",
     type: "post",
-    response: config => {
-      const { admin_name } = config.body;
-      const token = tokens[admin_name];
-
-      // mock error
-      if (!token) {
-        return {
-          code: 60204,
-          message: "Account and password are incorrect."
-        };
-      }
-
+    response: () => {
       return {
-        code: 0,
-        data: token
-      };
+        "code": 0,
+        "message": "登录成功！",
+        "data": {
+            "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYmVpbmdtYXRlLnRlc3QvYWRtaW4vbG9naW4iLCJpYXQiOjE2MDYxMTczNzQsImV4cCI6MTYwNjEyMDk3NCwibmJmIjoxNjA2MTE3Mzc0LCJqdGkiOiJabGdZTHJpbUpBcWxzVjEyIiwic3ViIjoxLCJwcnYiOiI5NDJhOWRmOWQ5NmNjMDcwNjliNTMzMjJkMGM2OWI2MjAwMWNiNGY4In0.7f22mHLqVujcOXBiXttfi_ZOeKwg5e2YmsNeyP8zUfM",
+            "expires_in": 3600
+        }
+      }
     }
   },
 
@@ -52,23 +19,19 @@ export default [
   {
     url: "/admin/admin_info",
     type: "get",
-    response: config => {
-      console.log(config.query)
-      const { token } = config.query;
-      const info = users[token];
-
-      // mock error
-      if (!info) {
-        return {
-          code: -1,
-          message: "token已失效，请重新登陆"
-        };
-      }
-
+    response: () => {
       return {
-        code: 0,
-        data: info
-      };
+        "code": 0,
+        "message": "成功！",
+        "data": {
+            "id": 2,
+            "admin_name": "jhin",
+            "mobile": "17610108101",
+            "head_img": "http://192.168.0.17:8001/storage/admin_head.jpeg",
+            "last_login_at": "2020-11-25 18:13:09",
+            "last_login_ip": "192.168.0.17"
+        }
+      }
     }
   },
 
@@ -78,9 +41,10 @@ export default [
     type: "get",
     response: () => {
       return {
-        code: 0,
-        data: "success"
-      };
+        "code": 0,
+        "message": "登出成功！",
+        "data": ""
+      }
     }
   }
 ];
