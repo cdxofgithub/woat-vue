@@ -6,10 +6,6 @@ const getDefaultState = () => {
   return {
     token: getToken(),
     userInfo: {}
-    // userInfo: {
-    //   avatar: "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
-    //   name: 'devin'
-    // }
   };
 };
 
@@ -23,7 +19,10 @@ const mutations = {
     state.token = token;
   },
   SET_USER(state, userinfo) {
-    state.userInfo = userinfo;
+    state.userInfo = {
+      avatar: userinfo.head_img,
+      name: userinfo.admin_name
+    };
   }
 };
 
@@ -36,20 +35,19 @@ const actions = {
         admin_name: username.trim(),
         password: password
       });
-      console.log(data)
       commit("SET_TOKEN", data.token);
       setToken(data.token);
       return data.token
     } catch (e) {
-      console.log(e);
+      throw new Error(e);
     }
   },
-  async getInfo({ commit, state }) {
+  async getInfo({ commit }) {
     try {
-      const { data } = await getInfo(state.token);
+      const { data } = await getInfo();
       commit("SET_USER", data);
     } catch (e) {
-      console.log(e);
+      throw new Error(e);
     }
   },
   async logout({ commit }) {
@@ -59,7 +57,7 @@ const actions = {
       resetRouter();
       commit("RESET_STATE");
     } catch (e) {
-      console.log(e);
+      throw new Error(e);
     }
   },
   async resetToken({ commit }) {

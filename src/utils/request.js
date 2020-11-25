@@ -15,11 +15,19 @@ const service = axios.create({
 // 添加请求拦截器
 service.interceptors.request.use(
   config => {
+    console.log(config.method.toLocaleLowerCase())
     if (store.getters.token) {
-      config.data = qs.stringify({
-        ...config.data,
-        token: getToken()
-      })
+      if (config.method.toLocaleLowerCase() == 'get') {
+        config.params = {
+          ...config.params,
+          token: getToken()
+        }
+      } else if (config.method.toLocaleLowerCase() == 'post') {
+        config.data = qs.stringify({
+          ...config.data,
+          token: getToken()
+        })
+      }
     }
     return config
   },
@@ -42,7 +50,7 @@ service.interceptors.response.use(
         duration: 5 * 1000
       })
 
-      if (res.code === -1) {
+      if (res.code === -2) {
         // to re-login
         MessageBox.confirm('登陆已失效，重新授权？', {
           confirmButtonText: 'Login',

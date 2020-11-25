@@ -126,20 +126,22 @@ export default {
       });
     },
     handleLogin() {
-      this.$refs.loginForm.validate(async valid => {
+      this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
-          await this.$store.dispatch("user/login", this.loginForm);
-          this.$message({
-            message: "登录成功",
-            type: "success",
-            duration: 2 * 1000,
-            onClose: () => {
-              console.log(this.redirect);
-              this.$router.push({ path: this.redirect || "/" });
-              this.loading = false;
-            }
-          });
+          this.$store.dispatch("user/login", this.loginForm).then(() => {
+            this.loading = false;
+            this.$message({
+              message: "登录成功",
+              type: "success",
+              duration: 2 * 1000,
+              onClose: () => {
+                this.$router.push({ path: this.redirect || "/" });
+              }
+            });
+          }).catch(() => {
+            this.loading = false;
+          })
         } else {
           console.log("error submit!!");
           return false;

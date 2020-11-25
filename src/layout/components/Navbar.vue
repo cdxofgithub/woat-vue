@@ -9,7 +9,7 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="title">
-      微信公众号管理系统
+      贝因美H5管理系统
     </div>
 
     <div class="right-menu">

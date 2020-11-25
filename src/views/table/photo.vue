@@ -3,14 +3,14 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.title"
-        placeholder="标题"
+        placeholder="用户编码"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
       <el-select
-        v-model="listQuery.type"
-        placeholder="类型"
+        v-model="listQuery.status"
+        placeholder="审核状态"
         clearable
         class="filter-item"
         style="width: 130px"
@@ -73,7 +73,7 @@
       </el-checkbox>
     </div>
 
-    <el-table
+    <!-- <el-table
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
@@ -199,7 +199,7 @@
           </el-button>
         </template>
       </el-table-column>
-    </el-table>
+    </el-table> -->
 
     <pagination
       v-show="total>0"
@@ -213,7 +213,7 @@
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
     >
-      <el-form
+      <!-- <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
@@ -276,7 +276,7 @@
             placeholder="Please input"
           />
         </el-form-item>
-      </el-form>
+      </el-form> -->
       <div
         slot="footer"
         class="dialog-footer"
@@ -327,19 +327,16 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { getOpusList } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
+  { key: 1, display_name: '已审核' },
+  { key: 0, display_name: '未审核' }
 ]
 
-// arr to obj, such as { CN : "China", US : "USA" }
 const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
@@ -370,14 +367,13 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
-        importance: undefined,
+        page_size: 20,
+        user_code: undefined,
         title: undefined,
-        type: undefined,
-        sort: '+id'
+        status: undefined,
+        created_at: undefined,
       },
       importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
@@ -412,14 +408,14 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      getOpusList(this.listQuery).then(response => {
+        console.log(response)
+        this.list = response.data
+        this.total = response.meta.total
 
-        // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
-        }, 1.5 * 1000)
+        }, 1000)
       })
     },
     handleFilter() {
