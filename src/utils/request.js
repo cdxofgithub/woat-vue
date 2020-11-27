@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
+import router from '@/router/index'
 import { getToken } from '@/utils/auth'
 import qs from "qs";
 
@@ -15,7 +16,6 @@ const service = axios.create({
 // 添加请求拦截器
 service.interceptors.request.use(
   config => {
-    console.log(config.method.toLocaleLowerCase())
     if (store.getters.token) {
       if (config.method.toLocaleLowerCase() == 'get') {
         config.params = {
@@ -57,7 +57,9 @@ service.interceptors.response.use(
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
-          store.dispatch('user/logout')
+          store.dispatch('user/resetToken')
+          const fullPath = router.currentRoute.fullPath
+          router.push(`/login?redirect=${fullPath}`);
         })
       }
       return Promise.reject(new Error(res.message || 'Error'))

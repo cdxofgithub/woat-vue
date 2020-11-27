@@ -26,21 +26,19 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {  //判断是否有用户信息
       const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo) {
-        next()
-      } else {
+      if (!hasGetUserInfo) {
         try {
           // 获取用户信息
           await store.dispatch('user/getInfo')
-          next()
         } catch (error) {
           // 移除token 去登录页
           await store.dispatch('user/resetToken')
-          Message.error(error || 'Has Error')
-          next(`/login?redirect=${to.path}`)
+          // Message.error(error || 'Has Error')
+          // next(`/login?redirect=${to.path}`)
           NProgress.done()
         }
       }
+      next()
     }
   } else {
     /* has no token*/

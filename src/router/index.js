@@ -47,7 +47,7 @@ export const constantRoutes = [
         path: "custom-reply",
         name: "Custom-reply",
         component: () => import("@/views/custom-reply/index"),
-        meta: { title: "自动回复", icon: "table" }
+        meta: { title: "自动回复", icon: "nested" }
       }
     ]
   },
@@ -62,13 +62,7 @@ export const constantRoutes = [
         path: "photo",
         name: "table-photo",
         component: () => import("@/views/table/photo"),
-        meta: { title: "图片审核", icon: "table" }
-      },
-      {
-        path: "index",
-        name: "table-index",
-        component: () => import("@/views/table/index"),
-        meta: { title: "文章列表", icon: "table" }
+        meta: { title: "图片审核", icon: "user" }
       }
     ]
   },

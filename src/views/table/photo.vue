@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.user_code"
         placeholder="用户编码"
         style="width: 200px;"
         class="filter-item"
@@ -18,15 +18,16 @@
         <el-option
           v-for="item in calendarTypeOptions"
           :key="item.key"
-          :label="item.display_name"
-          :value="item.key"
+          :label="item.name"
+          :value="item.status"
         />
       </el-select>
       <el-date-picker
         v-model="listQuery.created_at"
         class="filter-item"
         type="date"
-        placeholder="选择日期"
+        format="yyyy-MM-dd"
+        placeholder="选择创建日期"
       />
       <el-button
         v-waves
@@ -57,7 +58,7 @@
       </el-checkbox>
     </div>
 
-    <!-- <el-table
+    <el-table
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
@@ -68,281 +69,172 @@
       @sort-change="sortChange"
     >
       <el-table-column
-        label="序号"
-        prop="id"
-        sortable="custom"
+        label="用户编码"
         align="center"
-        width="80"
+        width="140"
         :class-name="getSortClass('id')"
       >
         <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+          <span>{{ row.user_code }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="时间"
-        width="150px"
+        label="图片"
         align="center"
+        min-width="150"
       >
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <div class="demo-image__preview">
+            <el-image 
+              style="width: 100px; height: 100px"
+              :src="row.attachments.attachment_path" 
+              fit="contain"
+              :preview-src-list="[row.attachments.attachment_path]"
+            />
+          </div>
         </template>
       </el-table-column>
       <el-table-column
-        label="标题"
-        min-width="150px"
+        label="点赞数"
+        sortable="custom"
+        prop="like_num"
+        align="center"
+        width="150"
       >
         <template slot-scope="{row}">
           <span
+            v-if="row.like_num"
             class="link-type"
-            @click="handleUpdate(row)"
-          >{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="作者"
-        width="110px"
-        align="center"
-      >
-        <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+            @click="handleFetchPv(row.pageviews)"
+          >{{ row.like_num }}</span>
+          <span v-else>0</span>
         </template>
       </el-table-column>
       <el-table-column
         v-if="showReviewer"
         label="审核人"
-        width="110px"
+        width="150"
         align="center"
       >
         <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
+          <span style="color:red;font-weight: 700">{{ row.reviewer }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="阅读数"
-        align="center"
-        width="95"
-      >
-        <template slot-scope="{row}">
-          <span
-            v-if="row.pageviews"
-            class="link-type"
-            @click="handleFetchPv(row.pageviews)"
-          >{{ row.pageviews }}</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="状态"
+        label="审核状态"
         class-name="status-col"
-        width="100"
+        width="150"
       >
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status == 'published' ? '发布' : row.status == 'draft' ? '草稿' : '删除' }}
+          <el-tag :type="row.status | typeFilter">
+            {{ row.status | nameFilter }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column
+        label="审核通过时间"
+        width="150"
+        align="center"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.review_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="更新时间"
+        width="150"
+        align="center"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.updated_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="创建时间"
+        prop="created_at"
+        sortable="custom"
+        width="150"
+        align="center"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column
         label="操作"
         align="center"
-        width="230"
+        width="300"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="{row,$index}">
           <el-button
-            type="primary"
-            size="mini"
-            @click="handleUpdate(row)"
-          >
-            编辑
-          </el-button>
-          <el-button
-            v-if="row.status!='published'"
+            v-if="row.status!='1'"
             size="mini"
             type="success"
-            @click="handleModifyStatus(row,'published')"
+            @click="handleModifyStatus(row, 1)"
           >
-            发布
+            审核通过
           </el-button>
           <el-button
-            v-if="row.status!='draft'"
+            v-if="row.status!='2'"
             size="mini"
-            @click="handleModifyStatus(row,'draft')"
+            type="danger"
+            @click="handleModifyStatus(row, 2)"
           >
-            草稿
+            审核未通过
           </el-button>
           <el-button
             v-if="row.status!='deleted'"
             size="mini"
-            type="danger"
+            type="info"
             @click="handleDelete(row,$index)"
           >
             删除
           </el-button>
         </template>
       </el-table-column>
-    </el-table> -->
+    </el-table>
 
     <pagination
       v-show="total > 0"
       :total="total"
       :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
+      :limit.sync="listQuery.page_size"
       @pagination="getList"
     />
-
-    <el-dialog
-      :title="textMap[dialogStatus]"
-      :visible.sync="dialogFormVisible"
-    >
-      <!-- <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="70px"
-        style="width: 400px; margin-left:50px;"
-      >
-        <el-form-item
-          label="Type"
-          prop="type"
-        >
-          <el-select
-            v-model="temp.type"
-            class="filter-item"
-            placeholder="Please select"
-          >
-            <el-option
-              v-for="item in calendarTypeOptions"
-              :key="item.key"
-              :label="item.display_name"
-              :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="Date"
-          prop="timestamp"
-        >
-          <el-date-picker
-            v-model="temp.timestamp"
-            type="datetime"
-            placeholder="Please pick a date"
-          />
-        </el-form-item>
-        <el-form-item
-          label="Title"
-          prop="title"
-        >
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item label="Status">
-          <el-select
-            v-model="temp.status"
-            class="filter-item"
-            placeholder="Please select"
-          >
-            <el-option
-              v-for="item in statusOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Remark">
-          <el-input
-            v-model="temp.remark"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-            placeholder="Please input"
-          />
-        </el-form-item>
-      </el-form> -->
-      <div
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button @click="dialogFormVisible = false">
-          Cancel
-        </el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus === 'create' ? createData() : updateData()"
-        >
-          Confirm
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog
-      :visible.sync="dialogPvVisible"
-      title="Reading statistics"
-    >
-      <el-table
-        :data="pvData"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%"
-      >
-        <el-table-column
-          prop="key"
-          label="Channel"
-        />
-        <el-table-column
-          prop="pv"
-          label="Pv"
-        />
-      </el-table>
-      <span
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          type="primary"
-          @click="dialogPvVisible = false"
-        >Confirm</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getOpusList } from "@/api/article";
+import { getOpusList, reviewOpus } from "@/api/article";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 
 const calendarTypeOptions = [
-  { key: 1, display_name: "已审核" },
-  { key: 0, display_name: "未审核" }
+  { status: 0, name: "待审核", type: 'info' },
+  { status: 1, name: "审核通过", type: 'success' },
+  { status: 2, name: "审核未通过", type: 'danger' },
 ];
 
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name;
-  return acc;
-}, {});
-
-console.log(calendarTypeKeyValue);
 
 export default {
   name: "ComplexTable",
   components: { Pagination },
   directives: { waves },
   filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: "success",
-        draft: "info",
-        deleted: "danger"
-      };
-      return statusMap[status];
+    typeFilter(status) {
+      const option = calendarTypeOptions.filter((e) => {
+        return e.status == status
+      })
+      return option[0].type
     },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type];
+    nameFilter(status) {
+      const option = calendarTypeOptions.filter((e) => {
+        return e.status == status
+      })
+      return option[0].name
     }
   },
   data() {
@@ -354,28 +246,17 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        page_size: 20,
+        page_size: 10,
         user_code: undefined,
-        title: undefined,
         status: undefined,
-        created_at: undefined
+        created_at: undefined,
+        sortable: {
+          prop: null,
+          order: null
+        }
       },
-      importanceOptions: [1, 2, 3],
-      sortOptions: [
-        { label: "ID Ascending", key: "+id" },
-        { label: "ID Descending", key: "-id" }
-      ],
-      statusOptions: ["published", "draft", "deleted"],
       showReviewer: false,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: "",
-        timestamp: new Date(),
-        title: "",
-        type: "",
-        status: "published"
-      },
+
       dialogFormVisible: false,
       dialogStatus: "",
       textMap: {
@@ -409,33 +290,56 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      getOpusList(this.listQuery).then(response => {
-        console.log(response);
+      let listQuery = this.listQuery 
+      if (listQuery.created_at) listQuery.created_at = parseTime(listQuery.created_at, "{y}-{m}-{d}")
+      getOpusList(listQuery).then(response => {
         this.list = response.data;
         this.total = response.meta.total;
 
         setTimeout(() => {
           this.listLoading = false;
         }, 1000);
-      });
+      }).catch(() => {
+
+      })
     },
     handleFilter() {
       this.listQuery.page = 1;
       this.getList();
     },
     handleModifyStatus(row, status) {
-      this.$message({
-        message: "操作Success",
-        type: "success"
+      reviewOpus({
+        opus_id: row.id,
+        status
+      }).then (() => {
+        this.$message({
+          message: "操作成功",
+          type: "success"
+        });
+        row.status = status
+        row.reviewer = this.$store.getters.name
+      }).catch(() => {
+      })
+    },
+    handleDelete(row, index) {
+      this.$notify({
+        title: "Success",
+        message: "Delete Successfully",
+        type: "success",
+        duration: 2000
       });
-      row.status = status;
+      this.list.splice(index, 1);
     },
     sortChange(data) {
       const { prop, order } = data;
-      if (prop === "id") {
-        this.sortByID(order);
-      }
+      this.listQuery.sortable = {
+        prop,
+        order
+      };
+      this.handleFilter()
     },
+
+
     sortByID(order) {
       if (order === "ascending") {
         this.listQuery.sort = "+id";
@@ -509,15 +413,6 @@ export default {
         }
       });
     },
-    handleDelete(row, index) {
-      this.$notify({
-        title: "Success",
-        message: "Delete Successfully",
-        type: "success",
-        duration: 2000
-      });
-      this.list.splice(index, 1);
-    },
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
         this.pvData = response.data.pvData;
@@ -527,13 +422,15 @@ export default {
     handleDownload() {
       this.downloadLoading = true;
       import("@/vendor/Export2Excel").then(excel => {
-        const tHeader = ["timestamp", "title", "type", "importance", "status"];
+        const tHeader = ["用户编码", "点赞数", "审核人", "审核状态", "审核通过时间", "更新时间", "创建时间"];
         const filterVal = [
-          "timestamp",
-          "title",
-          "type",
-          "importance",
-          "status"
+          "用户编码",
+          "点赞数",
+          "审核人",
+          "审核状态",
+          "审核通过时间",
+          "更新时间",
+          "创建时间",
         ];
         const data = this.formatJson(filterVal);
         excel.export_json_to_excel({
